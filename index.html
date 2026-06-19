@@ -6,6 +6,74 @@
         body { background: #0f0f1a; color: #fff; font-family: sans-serif; text-align: center; margin: 0; }
         .tab { display: none; padding: 20px; }
         .active { display: block; }
+        #balance-bar { background: #252545; padding: 10px; font-weight: bold; color: #ffcc00; }
+        #dice-face { font-size: 80px; margin: 20px; }
+        button { padding: 10px 20px; cursor: pointer; border-radius: 10px; border: none; background: #ff0055; color: white; margin: 5px; }
+        nav { padding: 10px; background: #1a1a2e; }
+    </style>
+</head>
+<body>
+
+    <div id="balance-bar">موجودی: <span id="balance">1000</span> سکه</div>
+
+    <nav>
+        <button onclick="showGame('crash')">انفجار</button>
+        <button onclick="showGame('dice')">تاس</button>
+    </nav>
+
+    <div id="crash" class="tab active">
+        <h1>بازی انفجار</h1>
+        <div id="multiplier">1.00x</div>
+        <button onclick="betCrash()">شرط‌بندی (۱۰ سکه)</button>
+    </div>
+
+    <div id="dice" class="tab">
+        <h1>بازی تاس</h1>
+        <div id="dice-face">🎲</div>
+        <button onclick="rollDice()">تاس بریز (۵۰ سکه)</button>
+    </div>
+
+    <script>
+        let balance = 1000;
+        function updateUI() { document.getElementById('balance').innerText = balance; }
+        
+        function showGame(game) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(game).classList.add('active');
+        }
+
+        function rollDice() {
+            if (balance < 50) return alert("سکه کافی نیست!");
+            balance -= 50; // کسر سکه
+            updateUI();
+            
+            // شبیه‌سازی بردِ تصادفی (اگر تاس بیش از ۳ باشد، سکه برمی‌گردد)
+            let result = Math.floor(Math.random() * 6) + 1;
+            document.getElementById('dice-face').innerText = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'][result-1];
+            
+            if (result > 3) {
+                balance += 100; // جایزه
+                updateUI();
+            }
+        }
+
+        function betCrash() {
+            if (balance < 10) return alert("سکه کافی نیست!");
+            balance -= 10;
+            updateUI();
+            // منطقِ انفجار که قبلاً داشتیم اینجا اضافه می‌شود
+        }
+    </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { background: #0f0f1a; color: #fff; font-family: sans-serif; text-align: center; margin: 0; }
+        .tab { display: none; padding: 20px; }
+        .active { display: block; }
         #balance-bar { background: #252545; padding: 15px; font-weight: bold; color: #ffcc00; font-size: 1.2rem; transition: color 0.3s; }
         .win { color: #00ffcc !important; transform: scale(1.1); }
         .lose { color: #ff3333 !important; }
