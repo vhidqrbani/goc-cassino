@@ -6,12 +6,21 @@
         body { background: #0f0f1a; color: #fff; font-family: sans-serif; text-align: center; margin: 0; }
         .tab { display: none; padding: 20px; }
         .active { display: block; }
-        #rocket { font-size: 50px; display: block; margin: 10px auto; transition: transform 0.1s; }
-        #multiplier { font-size: 3rem; color: #00ffcc; font-weight: bold; }
-        button { padding: 10px 20px; cursor: pointer; border-radius: 10px; border: none; background: #ff0055; color: white; margin: 5px; }
+        #balance-bar { background: #252545; padding: 15px; font-weight: bold; color: #ffcc00; font-size: 1.2rem; transition: color 0.3s; }
+        .win { color: #00ffcc !important; transform: scale(1.1); }
+        .lose { color: #ff3333 !important; }
+        
+        /* استایلِ لیستِ تاریخچه */
+        #history { margin-top: 20px; font-size: 1.2rem; }
+        .history-item { display: inline-block; padding: 5px 10px; margin: 2px; border-radius: 5px; }
+        
+        button { padding: 10px 15px; cursor: pointer; border-radius: 8px; border: none; background: #ff0055; color: white; margin: 5px; font-weight: bold; }
+        nav { padding: 10px; background: #1a1a2e; }
     </style>
 </head>
 <body>
+
+    <div id="balance-bar">موجودی: <span id="balance">1000</span> سکه</div>
 
     <nav>
         <button onclick="showGame('crash')">انفجار</button>
@@ -20,41 +29,72 @@
 
     <div id="crash" class="tab active">
         <h1>بازی انفجار</h1>
-        <div id="rocket">🚀</div>
-        <div id="multiplier">1.00x</div>
-        <button id="start-crash" onclick="playCrash()">شروع</button>
+        <button onclick="setBet(10)">۱۰</button>
+        <button onclick="setBet(50)">۵۰</button>
+        <button onclick="setBet(100)">۱۰۰</button>
+        <br>
+        <button onclick="playGame()">شروع بازی</button>
     </div>
 
     <div id="dice" class="tab">
         <h1>بازی تاس</h1>
-        <button onclick="rollDice()">تاس بریز</button>
-        <h2 id="dice-result">?</h2>
+        <button onclick="setBet(10)">۱۰</button>
+        <button onclick="setBet(50)">۵۰</button>
+        <button onclick="setBet(100)">۱۰۰</button>
+        <br>
+        <button onclick="playGame()">تاس بریز</button>
+    </div>
+
+    <div id="history">
+        تاریخچه: <span id="history-list"></span>
     </div>
 
     <script>
+        let balance = parseInt(localStorage.getItem('userBalance')) || 1000;
+        let betAmount = 10;
+        let history = []; // آرایه برای ذخیره نتایج
+        
+        const balElement = document.getElementById('balance');
+        const histElement = document.getElementById('history-list');
+
+        function updateUI(isWin) {
+            balElement.innerText = balance;
+            localStorage.setItem('userBalance', balance);
+            balElement.className = isWin ? 'win' : 'lose';
+            setTimeout(() => balElement.className = '', 500);
+
+            // بروزرسانی تاریخچه
+            histElement.innerHTML = history.map(res => 
+                `<span class="history-item" style="background: ${res === 'برد' ? '#00cc66' : '#cc0033'}">
+                    ${res === 'برد' ? '✅' : '❌'}
+                </span>`
+            ).join('');
+        }
+
+        function setBet(amount) { betAmount = amount; }
+
         function showGame(game) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.getElementById(game).classList.add('active');
         }
 
-        function playCrash() {
-            let mult = 1.00;
-            const display = document.getElementById('multiplier');
-            const rocket = document.getElementById('rocket');
-            let interval = setInterval(() => {
-                mult += 0.1;
-                display.innerText = mult.toFixed(2) + "x";
-                rocket.style.transform = `translateY(-${mult * 10}px)`; // حرکت موشک
-                if (Math.random() < 0.05) {
-                    clearInterval(interval);
-                    display.innerText = "انفجار!";
-                }
-            }, 100);
+        function playGame() {
+            if (balance < betAmount) return alert("سکه کافی نیست!");
+            balance -= betAmount;
+            
+            let win = Math.random() > 0.5;
+            if (win) {
+                balance += (betAmount * 2);
+                history.unshift('برد'); // اضافه کردن به اولِ لیست
+            } else {
+                history.unshift('باخت');
+            }
+            
+            if (history.length > 5) history.pop(); // فقط ۵ مورد آخر بماند
+            updateUI(win);
         }
 
-        function rollDice() {
-            document.getElementById('dice-result').innerText = Math.floor(Math.random() * 6) + 1;
-        }
+        updateUI();
     </script>
 </body>
 </html>
