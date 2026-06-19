@@ -1,33 +1,73 @@
+
 <!DOCTYPE html>
-<html lang="fa">
+<html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <title>GOC Casino</title>
     <style>
-        body { background-color: #0b0d17; color: white; text-align: center; font-family: sans-serif; padding-top: 50px; }
-        .lang-btn { margin: 10px; padding: 10px; cursor: pointer; }
+        body { background: radial-gradient(circle, #1a1a2e, #0f0f1a); color: #fff; font-family: 'Tahoma', sans-serif; text-align: center; height: 100vh; margin: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        #game-container { border: 2px solid #4e4e6a; padding: 30px; border-radius: 20px; background: rgba(255,255,255,0.05); width: 80%; }
+        #multiplier { font-size: 3.5rem; color: #00ffcc; font-weight: bold; text-shadow: 0 0 20px #00ffcc; margin: 20px 0; }
+        .lang-btn { margin: 5px; padding: 8px 15px; cursor: pointer; border-radius: 5px; border: 1px solid #4e4e6a; background: transparent; color: white; }
+        button#start-btn { padding: 15px 40px; font-size: 1.5rem; cursor: pointer; border-radius: 50px; border: none; background: linear-gradient(45deg, #ff0055, #ffcc00); color: white; font-weight: bold; margin-top: 20px; }
+        .crash { color: #ff3333 !important; text-shadow: 0 0 20px #ff3333 !important; }
     </style>
 </head>
 <body>
-    <h1 id="title">Galaxy Orbit Casino</h1>
-    <p id="description">به کهکشانِ بخت‌آزمایی خوش آمدید</p>
-    
-    <div>
-        <button class="lang-btn" onclick="changeLang('fa')">فارسی</button>
-        <button class="lang-btn" onclick="changeLang('en')">English</button>
-        <button class="lang-btn" onclick="changeLang('fr')">Français</button>
+    <div id="game-container">
+        <h1 id="title">کازینویِ کهکشانی</h1>
+        <div id="multiplier">1.00x</div>
+        
+        <div>
+            <button class="lang-btn" onclick="changeLang('fa')">فارسی</button>
+            <button class="lang-btn" onclick="changeLang('en')">English</button>
+            <button class="lang-btn" onclick="changeLang('fr')">Français</button>
+        </div>
+
+        <button id="start-btn" onclick="playCrash()">شروع بازی</button>
     </div>
 
     <script>
         const texts = {
-            fa: { title: "کازینویِ کهکشانی", desc: "به کهکشانِ بخت‌آزمایی خوش آمدید" },
-            en: { title: "Galaxy Orbit Casino", desc: "Welcome to the Fortune Galaxy" },
-            fr: { title: "Casino Galaxie", desc: "Bienvenue dans la galaxie de la fortune" }
+            fa: { title: "کازینویِ کهکشانی", btn: "شروع بازی", crash: "انفجار!" },
+            en: { title: "Galaxy Orbit Casino", btn: "Start Game", crash: "Crash!" },
+            fr: { title: "Casino Galaxie", btn: "Commencer", crash: "Crash!" }
         };
+        let currentLang = 'fa';
 
         function changeLang(lang) {
+            currentLang = lang;
             document.getElementById('title').innerText = texts[lang].title;
-            document.getElementById('description').innerText = texts[lang].desc;
+            document.getElementById('start-btn').innerText = texts[lang].btn;
+        }
+
+        let gameActive = false;
+        function playCrash() {
+            if (gameActive) return;
+            gameActive = true;
+            let mult = 1.00;
+            const display = document.getElementById('multiplier');
+            const btn = document.getElementById('start-btn');
+            display.classList.remove('crash');
+            btn.disabled = true;
+            
+            const target = Math.random() < 0.2 ? (Math.random() * 2 + 1) : (Math.random() * 5 + 2);
+            
+            let interval = setInterval(() => {
+                mult += 0.04;
+                display.innerText = mult.toFixed(2) + "x";
+                if (mult >= target) {
+                    clearInterval(interval);
+                    display.innerText = texts[currentLang].crash + " " + target.toFixed(2) + "x";
+                    display.classList.add('crash');
+                    setTimeout(() => {
+                        display.classList.remove('crash');
+                        display.innerText = "1.00x";
+                        btn.disabled = false;
+                        gameActive = false;
+                    }, 2500);
+                }
+            }, 80);
         }
     </script>
 </body>
