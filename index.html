@@ -3,9 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <title>GOC Casino</title>
+    <style>
+        body { background-color: #0b0d17; color: white; text-align: center; font-family: sans-serif; padding-top: 50px; }
+        .lang-btn { margin: 10px; padding: 10px; cursor: pointer; }
+    </style>
 </head>
 <body>
-    <h1>Galaxy Orbit Casino</h1>
-    <p>به کازینویِ کهکشانی خوش آمدید</p>
+    <h1 id="title">Galaxy Orbit Casino</h1>
+    <p id="description">به کهکشانِ بخت‌آزمایی خوش آمدید</p>
+    
+    <div>
+        <button class="lang-btn" onclick="changeLang('fa')">فارسی</button>
+        <button class="lang-btn" onclick="changeLang('en')">English</button>
+        <button class="lang-btn" onclick="changeLang('fr')">Français</button>
+    </div>
+
+    <script>
+        const texts = {
+            fa: { title: "کازینویِ کهکشانی", desc: "به کهکشانِ بخت‌آزمایی خوش آمدید" },
+            en: { title: "Galaxy Orbit Casino", desc: "Welcome to the Fortune Galaxy" },
+            fr: { title: "Casino Galaxie", desc: "Bienvenue dans la galaxie de la fortune" }
+        };
+
+        function changeLang(lang) {
+            document.getElementById('title').innerText = texts[lang].title;
+            document.getElementById('description').innerText = texts[lang].desc;
+        }
+    </script>
 </body>
 </html>
